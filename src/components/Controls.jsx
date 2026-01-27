@@ -14,7 +14,7 @@ export default function Controls({
           className="mt-1 w-full rounded-xl border border-neutral-700 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-600"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name, tool, year..."
+          placeholder="Search by title, tool, tag, year..."
         />
       </div>
 

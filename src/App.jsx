@@ -11,8 +11,8 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [domainFilter, setDomainFilter] = useState("All");
 
-  const [sortBy, setSortBy] = useState("year");
-  const [sortDir, setSortDir] = useState("desc");
+  const [sortBy, setSortBy] = useState("year"); // "title" | "domain" | "year"
+  const [sortDir, setSortDir] = useState("desc"); // "asc" | "desc"
 
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -24,11 +24,13 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  // KPIs
   const totalProjects = projectsData.length;
   const domainsCount = new Set(projectsData.map((p) => p.domain)).size;
   const toolsCount = new Set(projectsData.flatMap((p) => p.tools)).size;
   const latestYear = Math.max(...projectsData.map((p) => p.year));
 
+  // Domain options
   const domains = useMemo(() => {
     const unique = Array.from(new Set(projectsData.map((p) => p.domain)));
     unique.sort((a, b) => a.localeCompare(b));
@@ -50,7 +52,14 @@ export default function App() {
     const filtered = projectsData.filter((p) => {
       const matchesDomain = domainFilter === "All" ? true : p.domain === domainFilter;
 
-      const haystack = [p.project_name, p.domain, String(p.year), ...(p.tools || [])]
+      const haystack = [
+        p.title,
+        p.domain,
+        String(p.year),
+        ...(p.tools || []),
+        ...(p.tags || []),
+        p.shortDescription || "",
+      ]
         .join(" ")
         .toLowerCase();
 
@@ -63,7 +72,7 @@ export default function App() {
       let av = a[sortBy];
       let bv = b[sortBy];
 
-      if (sortBy === "project_name" || sortBy === "domain") {
+      if (sortBy === "title" || sortBy === "domain") {
         av = String(av).toLowerCase();
         bv = String(bv).toLowerCase();
       }
