@@ -8,6 +8,13 @@ export const projectsData = [
     tags: ["profit", "discounts", "KPIs"],
     shortDescription:
       "Explored profit drivers, top performers, and discount impact to improve margins.",
+    assets: {
+  screenshots: [
+    "/projects/sales-performance/dashboard-1.png"
+  ],
+  files: []
+},
+
 
     // מה שרואים ב"פרויקט עצמו" (מודאל/עמוד בעתיד)
     overview:
