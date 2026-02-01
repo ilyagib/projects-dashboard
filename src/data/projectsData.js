@@ -8,12 +8,25 @@ export const projectsData = [
     tags: ["profit", "discounts", "KPIs"],
     shortDescription:
       "Explored profit drivers, top performers, and discount impact to improve margins.",
-    assets: {
+assets: {
   screenshots: [
     "/projects/sales-performance/dashboard-1.png"
   ],
-  files: []
+  files: [
+    // אופציונלי בהמשך:
+    // { label: "Report (PDF)", url: "/projects/sales-performance/report.pdf" }
+  ]
 },
+
+embeds: [
+  {
+    label: "Interactive Dashboard",
+    type: "iframe",
+    src: "https://public.tableau.com/views/tableau_employee_performance/Employee_Data_Analysis?:showVizHome=no&:embed=yes&:tabs=no",
+    height: 750
+  }
+],
+
 
 
     // מה שרואים ב"פרויקט עצמו" (מודאל/עמוד בעתיד)
