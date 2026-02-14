@@ -21,17 +21,25 @@ body {
   --cp-text: 235 245 255;
 }
 
-
 /* Background: radial glow ONLY (no grid) */
 .cp-bg {
+  position: relative;
   background:
     radial-gradient(900px 500px at 10% 5%, rgba(255,0,140,0.18), transparent 65%),
     radial-gradient(1000px 600px at 90% 10%, rgba(0,255,255,0.16), transparent 60%),
     rgb(var(--cp-bg));
 }
+
+/* Make sure page content is ABOVE the bg overlays */
+.cp-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
 .cp-border-glow {
   border-color: rgba(var(--cp-border), 0.35);
 }
+
 .cp-panel {
   background: rgba(var(--cp-panel), 0.55);
   border: 1px solid rgba(255,255,255,0.10);
@@ -39,6 +47,14 @@ body {
     0 0 0 1px rgba(255,255,255,0.04),
     0 0 22px rgba(60, 255, 245, 0.08);
   backdrop-filter: blur(10px);
+}
+
+/* panel hover */
+.cp-panel:hover {
+  border-color: rgba(0,255,255,.35);
+  box-shadow:
+    0 0 0 1px rgba(0,255,255,.15),
+    0 0 24px rgba(0,255,255,.12);
 }
 
 .cp-glow {
@@ -57,16 +73,6 @@ body {
   transition: all .2s ease;
 }
 
-.cp-panel:hover {
-  border-color: rgba(0,255,255,.35);
-  box-shadow:
-    0 0 0 1px rgba(0,255,255,.15),
-    0 0 24px rgba(0,255,255,.12);
-}
-
-
-
-
 .cp-title {
   color: rgb(230 255 255);
   text-shadow:
@@ -74,6 +80,7 @@ body {
     0 0 20px rgba(0,255,255,.45),
     0 0 40px rgba(255,0,140,.35);
 }
+
 .cp-heading {
   color: rgb(235 245 255);
   text-shadow:
@@ -108,9 +115,16 @@ body {
 }
 .animate-fade-in { animation: fadeIn 0.35s ease-out forwards; }
 
-/* Row hover (optional) */
-/* ===== CYBERPUNK TABLE ROW ===== */
+/* ===== ROUTE TRANSITIONS (page change) ===== */
+@keyframes routeIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.995); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+.animate-route {
+  animation: routeIn 240ms ease-out both;
+}
 
+/* ===== CYBERPUNK TABLE ROW ===== */
 .cp-row {
   position: relative;
   transition: background 160ms ease;
@@ -140,7 +154,6 @@ body {
   width: 3px;
 }
 
-/* futuristic hover background */
 .cp-row:hover {
   background:
     linear-gradient(
@@ -154,15 +167,12 @@ body {
     0 0 20px rgba(0,255,255,0.10);
 }
 
-
 /* ===== CYBERPUNK HEADER SWEEP ===== */
-
 .cp-sweep {
   position: relative;
   overflow: hidden;
 }
 
-/* שכבת sweep */
 .cp-sweep::after {
   content: "";
   position: absolute;
@@ -174,17 +184,17 @@ body {
     rgba(255,0,140,0.08) 55%,
     transparent 65%
   );
-  transform: translateX(-40%) rotate(0deg);
-  animation: cpSweep 5.5s ease-in-out infinite;
+  transform: translateX(-40%);
+  animation: cpSweepSlow 5.5s ease-in-out infinite;
   pointer-events: none;
 }
 
-@keyframes cpSweep {
-  0%   { transform: translateX(-55%) rotate(0deg); opacity: 0.0; }
+@keyframes cpSweepSlow {
+  0%   { transform: translateX(-55%); opacity: 0.0; }
   10%  { opacity: 1; }
-  50%  { transform: translateX(55%) rotate(0deg); opacity: 0.9; }
+  50%  { transform: translateX(55%); opacity: 0.9; }
   90%  { opacity: 1; }
-  100% { transform: translateX(55%) rotate(0deg); opacity: 0.0; }
+  100% { transform: translateX(55%); opacity: 0.0; }
 }
 
 /* ===== CP2077 CUT CORNERS ===== */
@@ -192,10 +202,12 @@ body {
   position: relative;
   clip-path: polygon(
     12px 0,
-    100% 0,
+    calc(100% - 12px) 0,
+    100% 12px,
     100% calc(100% - 12px),
     calc(100% - 12px) 100%,
-    0 100%,
+    12px 100%,
+    0 calc(100% - 12px),
     0 12px
   );
 }
@@ -226,18 +238,12 @@ body {
 }
 
 /* ===== NOISE + VIGNETTE OVERLAY ===== */
-.cp-bg {
-  position: relative;
-}
-
 .cp-bg::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-
-  /* vignette */
   background:
     radial-gradient(900px 520px at 50% 15%, rgba(255,0,140,0.10), transparent 60%),
     radial-gradient(900px 520px at 50% 95%, rgba(0,255,255,0.10), transparent 60%),
@@ -252,8 +258,6 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 0;
-
-  /* noise (CSS only) */
   background-image:
     repeating-linear-gradient(
       0deg,
@@ -265,197 +269,12 @@ body {
   opacity: 0.20;
 }
 
-/* ===== CYBERPUNK KPI CARDS (2077-ish) ===== */
-
-.cp-kpi {
-  position: relative;
-  border-radius: 18px;
-  background:
-    radial-gradient(1200px 300px at 20% 0%, rgba(255, 54, 166, 0.10), transparent 55%),
-    radial-gradient(900px 260px at 80% 20%, rgba(60, 255, 245, 0.10), transparent 60%),
-    rgba(var(--cp-panel), 0.45);
-  border: 1px solid rgba(60, 255, 245, 0.22);
-  backdrop-filter: blur(12px);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.04),
-    0 0 22px rgba(60,255,245,0.10),
-    0 0 44px rgba(255,54,166,0.06);
-  overflow: hidden;
-  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
-}
-
-.cp-kpi::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  background: linear-gradient(
-    120deg,
-    rgba(60,255,245,0.0),
-    rgba(60,255,245,0.18),
-    rgba(255,54,166,0.12),
-    rgba(255,54,166,0.0)
-  );
-  opacity: 0;
-  transition: opacity 160ms ease;
-  pointer-events: none;
-}
-
-.cp-kpi::after {
-  /* top scanline */
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 2px;
-  background: linear-gradient(90deg, rgba(60,255,245,0.0), rgba(60,255,245,0.65), rgba(255,54,166,0.35), rgba(255,54,166,0.0));
-  opacity: 0.65;
-  pointer-events: none;
-}
-
-.cp-kpi:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 54, 166, 0.32);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.05),
-    0 0 26px rgba(60,255,245,0.14),
-    0 0 60px rgba(255,54,166,0.10);
-}
-
-.cp-kpi:hover::before {
-  opacity: 1;
-}
-
-.cp-kpi-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 34px;
-  width: 34px;
-  border-radius: 10px;
-  border: 1px solid rgba(60,255,245,0.22);
-  background: rgba(0,0,0,0.25);
-  box-shadow: 0 0 18px rgba(60,255,245,0.10);
-}
-
-.cp-kpi-title {
-  color: rgba(230, 230, 240, 0.78);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.cp-kpi-value {
-  font-family: "Orbitron", sans-serif;
-  letter-spacing: 0.02em;
-  color: rgb(230 255 255);
-  text-shadow:
-    0 0 6px rgba(60,255,245,.40),
-    0 0 16px rgba(60,255,245,.22),
-    0 0 26px rgba(255,54,166,.16);
-}
-
-/* ===== CYBERPUNK 2077 CUT CORNERS ===== */
-
-.cp-cut {
-  position: relative;
-  clip-path: polygon(
-    12px 0,
-    calc(100% - 12px) 0,
-    100% 12px,
-    100% calc(100% - 12px),
-    calc(100% - 12px) 100%,
-    12px 100%,
-    0 calc(100% - 12px),
-    0 12px
-  );
-}
-
-.cp-kpi-2077 {
-  position: relative;
-  border: 1px solid rgba(60,255,245,0.25);
-  background:
-    linear-gradient(
-      120deg,
-      rgba(255,54,166,0.06),
-      rgba(0,0,0,0.25) 35%,
-      rgba(60,255,245,0.06)
-    ),
-    rgba(var(--cp-panel), 0.50);
-
-  backdrop-filter: blur(10px);
-
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.03),
-    0 0 20px rgba(60,255,245,0.12),
-    0 0 45px rgba(255,54,166,0.08);
-
-  transition: all 180ms ease;
-}
-
-.cp-kpi-2077:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255,54,166,0.45);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.05),
-    0 0 25px rgba(60,255,245,0.18),
-    0 0 60px rgba(255,54,166,0.14);
-}
-
-/* glowing side accent */
-.cp-kpi-2077::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 20%;
-  bottom: 20%;
-  width: 2px;
-  background: linear-gradient(
-    180deg,
-    rgba(60,255,245,0.9),
-    rgba(255,54,166,0.8)
-  );
-  box-shadow:
-    0 0 12px rgba(60,255,245,0.6),
-    0 0 20px rgba(255,54,166,0.4);
-}
-
-/* ===== KPI HOLOGRAM / SCANLINE ===== */
-
-.cp-holo {
+/* ===== SCANLINES (SAFE) ===== */
+/* חשוב: אלמנט שמקבל cp-scanlines צריך להיות position:relative כדי ש-::before לא "יברח" */
+.cp-scanlines {
   position: relative;
   overflow: hidden;
 }
-
-/* moving light sweep */
-.cp-holo::after {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: linear-gradient(
-    120deg,
-    transparent 40%,
-    rgba(60,255,245,0.22) 50%,
-    rgba(255,54,166,0.16) 56%,
-    transparent 70%
-  );
-  transform: translateX(-35%) rotate(8deg);
-  opacity: 0;
-  transition: opacity 180ms ease;
-  pointer-events: none;
-}
-
-.cp-holo:hover::after {
-  opacity: 1;
-  animation: cpSweep 900ms ease-out forwards;
-}
-
-@keyframes cpSweep {
-  0%   { transform: translateX(-45%) rotate(8deg); }
-  100% { transform: translateX(45%) rotate(8deg); }
-}
-
-/* subtle scanlines */
 .cp-scanlines::before {
   content: "";
   position: absolute;
@@ -472,15 +291,185 @@ body {
   pointer-events: none;
 }
 
-/* softer hologram for table rows */
-.cp-row.cp-holo::after {
-  opacity: 0;
+/* ===== KPI CARDS ===== */
+.cp-kpi {
+  position: relative;
+  border-radius: 18px;
+  background:
+    radial-gradient(1200px 300px at 20% 0%, rgba(255, 0, 140, 0.10), transparent 55%),
+    radial-gradient(900px 260px at 80% 20%, rgba(0, 255, 255, 0.10), transparent 60%),
+    rgba(var(--cp-panel), 0.45);
+  border: 1px solid rgba(0, 255, 255, 0.22);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 0 22px rgba(0,255,255,0.10),
+    0 0 44px rgba(255,0,140,0.06);
+  overflow: hidden;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.cp-row.cp-holo:hover::after {
-  opacity: 0.45; /* פחות חזק מהכרטיסיות */
+.cp-kpi::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(
+    120deg,
+    rgba(0,255,255,0.0),
+    rgba(0,255,255,0.18),
+    rgba(255,0,140,0.12),
+    rgba(255,0,140,0.0)
+  );
+  opacity: 0;
+  transition: opacity 160ms ease;
+  pointer-events: none;
 }
+
+.cp-kpi::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(0,255,255,0.0),
+    rgba(0,255,255,0.65),
+    rgba(255,0,140,0.35),
+    rgba(255,0,140,0.0)
+  );
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.cp-kpi:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 0, 140, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 0 26px rgba(0,255,255,0.14),
+    0 0 60px rgba(255,0,140,0.10);
+}
+
+.cp-kpi:hover::before { opacity: 1; }
+
+.cp-kpi-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,255,255,0.22);
+  background: rgba(0,0,0,0.25);
+  box-shadow: 0 0 18px rgba(0,255,255,0.10);
+}
+
+.cp-kpi-title {
+  color: rgba(230, 230, 240, 0.78);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cp-kpi-value {
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 0.02em;
+  color: rgb(230 255 255);
+  text-shadow:
+    0 0 6px rgba(0,255,255,.40),
+    0 0 16px rgba(0,255,255,.22),
+    0 0 26px rgba(255,0,140,.16);
+}
+
+/* ===== KPI HOLOGRAM / SCANLINE ===== */
+.cp-holo {
+  position: relative;
+  overflow: hidden;
+}
+
+.cp-holo::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(
+    120deg,
+    transparent 40%,
+    rgba(0,255,255,0.22) 50%,
+    rgba(255,0,140,0.16) 56%,
+    transparent 70%
+  );
+  transform: translateX(-35%) rotate(8deg);
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+}
+
+.cp-holo:hover::after {
+  opacity: 1;
+  animation: cpSweepFast 900ms ease-out forwards;
+}
+
+@keyframes cpSweepFast {
+  0%   { transform: translateX(-45%) rotate(8deg); }
+  100% { transform: translateX(45%) rotate(8deg); }
+}
+
+/* softer hologram for table rows */
+.cp-row.cp-holo::after { opacity: 0; }
+.cp-row.cp-holo:hover::after { opacity: 0.45; }
 
 /* Hide scrollbars but keep scrolling */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ===== MODAL HUD POP (entrance) ===== */
+@keyframes cpPop {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.985); filter: blur(6px); }
+  60%  { opacity: 1; transform: translateY(0) scale(1.0); filter: blur(0px); }
+  100% { opacity: 1; transform: translateY(0) scale(1.0); }
+}
+.cp-pop {
+  animation: cpPop 240ms ease-out forwards;
+}
+
+/* ===== SUBTLE GLITCH (hover) ===== */
+.cp-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.cp-glitch::before,
+.cp-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cp-glitch::before {
+  transform: translate(1px, 0);
+  color: rgba(0,255,255,0.8);
+}
+
+.cp-glitch::after {
+  transform: translate(-1px, 0);
+  color: rgba(255,0,140,0.75);
+}
+
+.cp-glitch:hover::before,
+.cp-glitch:hover::after {
+  opacity: 0.55;
+  animation: cpGlitch 450ms steps(2, end) infinite;
+}
+
+@keyframes cpGlitch {
+  0%   { clip-path: inset(0 0 80% 0); transform: translate(1px, -1px); }
+  25%  { clip-path: inset(30% 0 40% 0); transform: translate(-1px, 0); }
+  50%  { clip-path: inset(60% 0 20% 0); transform: translate(2px, 1px); }
+  75%  { clip-path: inset(10% 0 65% 0); transform: translate(-2px, 0); }
+  100% { clip-path: inset(0 0 80% 0); transform: translate(1px, -1px); }
+}
