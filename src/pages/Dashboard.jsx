@@ -6,20 +6,23 @@ import Header from "../components/Header";
 import KpiGrid from "../components/KpiGrid";
 import Controls from "../components/Controls";
 import ProjectsTable from "../components/ProjectsTable";
+import ProjectModal from "../components/ProjectModal";
 
 export default function Dashboard() {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [domainFilter, setDomainFilter] = useState("All");
-  const [sortBy, setSortBy] = useState("year"); // "title" | "domain" | "year"
-  const [sortDir, setSortDir] = useState("desc"); // "asc" | "desc"
+  const [sortBy, setSortBy] = useState("year");
+  const [sortDir, setSortDir] = useState("desc");
+  const [selectedProject, setSelectedProject] = useState(null);
 
-  // KPIs
-  const totalProjects = projectsData.length;
-  const domainsCount = new Set(projectsData.map((p) => p.domain)).size;
-  const toolsCount = new Set(projectsData.flatMap((p) => p.tools)).size;
-  const latestYear = Math.max(...projectsData.map((p) => p.year));
+  const { totalProjects, domainsCount, toolsCount } = useMemo(() => {
+    const totalProjects = projectsData.length;
+    const domainsCount = new Set(projectsData.map((p) => p.domain)).size;
+    const toolsCount = new Set(projectsData.flatMap((p) => p.tools || [])).size;
+    return { totalProjects, domainsCount, toolsCount };
+  }, []);
 
   const domains = useMemo(() => {
     const unique = Array.from(new Set(projectsData.map((p) => p.domain)));
@@ -28,9 +31,8 @@ export default function Dashboard() {
   }, []);
 
   const toggleSort = (col) => {
-    if (sortBy === col) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    } else {
+    if (sortBy === col) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
       setSortBy(col);
       setSortDir(col === "year" ? "desc" : "asc");
     }
@@ -40,7 +42,7 @@ export default function Dashboard() {
     const q = search.trim().toLowerCase();
 
     const filtered = projectsData.filter((p) => {
-      const matchesDomain = domainFilter === "All" ? true : p.domain === domainFilter;
+      const matchesDomain = domainFilter === "All" || p.domain === domainFilter;
 
       const haystack = [
         p.title,
@@ -55,14 +57,13 @@ export default function Dashboard() {
         .join(" ")
         .toLowerCase();
 
-      const matchesSearch = q === "" ? true : haystack.includes(q);
-
+      const matchesSearch = q === "" || haystack.includes(q);
       return matchesDomain && matchesSearch;
     });
 
-    const sorted = [...filtered].sort((a, b) => {
-      let av = a[sortBy];
-      let bv = b[sortBy];
+    return [...filtered].sort((a, b) => {
+      let av = a?.[sortBy] ?? "";
+      let bv = b?.[sortBy] ?? "";
 
       if (sortBy === "title" || sortBy === "domain") {
         av = String(av).toLowerCase();
@@ -73,8 +74,6 @@ export default function Dashboard() {
       if (av > bv) return sortDir === "asc" ? 1 : -1;
       return 0;
     });
-
-    return sorted;
   }, [search, domainFilter, sortBy, sortDir]);
 
   const onReset = () => {
@@ -84,40 +83,41 @@ export default function Dashboard() {
     setSortDir("desc");
   };
 
-  const openProject = (p) => {
-    navigate(`/projects/${p.id}`);
-  };
-
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <div className="mx-auto w-full max-w-6xl px-6 py-8">
-        <Header />
+    <div className="mx-auto w-full max-w-6xl px-6 pt-8 pb-2 animate-fade-in">
 
-        <KpiGrid
-          total={totalProjects}
-          domains={domainsCount}
-          tools={toolsCount}
-          latestYear={latestYear}
-        />
+      <Header />
 
-        <Controls
-          search={search}
-          setSearch={setSearch}
-          domainFilter={domainFilter}
-          setDomainFilter={setDomainFilter}
-          domains={domains}
-          onReset={onReset}
-        />
+      <KpiGrid total={totalProjects} domains={domainsCount} tools={toolsCount} />
 
-        <ProjectsTable
-          projects={visibleProjects}
-          totalCount={projectsData.length}
-          sortBy={sortBy}
-          sortDir={sortDir}
-          onToggleSort={toggleSort}
-          onRowClick={openProject}
+      <Controls
+        search={search}
+        setSearch={setSearch}
+        domainFilter={domainFilter}
+        setDomainFilter={setDomainFilter}
+        domains={domains}
+        onReset={onReset}
+      />
+
+      <ProjectsTable
+        projects={visibleProjects}
+        totalCount={projectsData.length}
+        sortBy={sortBy}
+        sortDir={sortDir}
+        onToggleSort={toggleSort}
+        onRowClick={(p) => setSelectedProject(p)}
+      />
+
+      {selectedProject && (
+        <ProjectModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+          onOpenFull={() => {
+            navigate(`/projects/${selectedProject.id}`);
+            setSelectedProject(null);
+          }}
         />
-      </div>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+// src/components/Controls.jsx
 export default function Controls({
   search,
   setSearch,
@@ -7,38 +8,72 @@ export default function Controls({
   onReset,
 }) {
   return (
-    <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-end">
-      <div className="flex-1">
-        <label className="text-xs text-neutral-300">Search</label>
-        <input
-          className="mt-1 w-full rounded-xl border border-neutral-700 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-600"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by title, tool, tag, year..."
-        />
-      </div>
+    <div className="mt-7">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
 
-      <div className="w-full md:w-64">
-        <label className="text-xs text-neutral-300">Domain</label>
-        <select
-          className="mt-1 w-full rounded-xl border border-neutral-700 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-600"
-          value={domainFilter}
-          onChange={(e) => setDomainFilter(e.target.value)}
-        >
-          {domains.map((d) => (
-            <option key={d} value={d} className="bg-neutral-900">
-              {d}
-            </option>
-          ))}
-        </select>
-      </div>
+        {/* Search */}
+        <div className="lg:col-span-8">
+          <label className="mb-2 block text-xs font-medium tracking-wide text-neutral-300">
+            Search
+          </label>
 
-      <button
-        onClick={onReset}
-        className="h-[42px] w-full rounded-xl border border-neutral-700 bg-neutral-900/60 px-4 text-sm text-neutral-100 transition hover:border-neutral-500 hover:bg-neutral-900 md:w-auto"
-      >
-        Reset
-      </button>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by title, tool, tag, year..."
+            className="
+              cp-panel cp-border-glow
+              h-11 w-full rounded-xl px-4
+              text-sm text-neutral-100
+              placeholder:text-neutral-500
+              outline-none transition
+              focus:ring-2 focus:ring-neutral-600
+            "
+          />
+        </div>
+
+        {/* Domain */}
+        <div className="lg:col-span-3">
+          <label className="mb-2 block text-xs font-medium tracking-wide text-neutral-300">
+            Domain
+          </label>
+
+          <select
+            value={domainFilter}
+            onChange={(e) => setDomainFilter(e.target.value)}
+            className="
+              cp-panel cp-border-glow
+              h-11 w-full rounded-xl px-3
+              text-sm text-neutral-100
+              outline-none transition
+              focus:ring-2 focus:ring-neutral-600
+            "
+          >
+            {domains.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Reset */}
+        <div className="lg:col-span-1 lg:flex lg:items-end">
+          <button
+            onClick={onReset}
+            type="button"
+            className="
+              cp-btn
+              h-11 w-full rounded-xl
+              px-4 text-sm text-neutral-100
+              active:scale-[0.99]
+            "
+          >
+            Reset
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 }
