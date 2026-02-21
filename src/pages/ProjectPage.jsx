@@ -141,31 +141,24 @@ export default function ProjectPage() {
  {/* PRESENTATION */}
 {project.assets?.files?.length > 0 && (
   <section className="mt-8">
-    <div className="cp-panel cp-cut cp-glow-strong overflow-hidden border cp-border-glow">
-
-      <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
-        <div className="text-[11px] uppercase tracking-[0.2em] text-white/60">
-          Business Presentation
-        </div>
-
-        <a
-          href={project.assets.files[0].url}
-          download
-          className="cp-btn-strong rounded-lg px-3 py-1.5 text-xs text-neutral-100"
-        >
-          Download PDF
-        </a>
+    <div className="flex items-center justify-between px-1 pb-3">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-white/60">
+        Business Presentation
       </div>
 
-      <div className="p-4">
-        <PresentationViewer
-          src={project.assets.files[0].url}
-        />
-      </div>
-
+      <a
+        href={project.assets.files[0].url}
+        download
+        className="cp-btn-strong rounded-lg px-3 py-1.5 text-xs text-neutral-100"
+      >
+        Download PDF
+      </a>
     </div>
+
+    {/* בלי מסגרת נוספת כאן */}
+    <PresentationViewer src={project.assets.files[0].url} />
   </section>
-)}  
+)}
       </div>
     </div>
   );
